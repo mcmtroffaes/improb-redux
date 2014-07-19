@@ -1,30 +1,29 @@
+# helper function to check that two matrices are equal within tolerance
+.stopifnotalmostequal = function(a, b, tol=1e-10) {
+  #print("checking")
+  #print(a)
+  #print(b)
+  stopifnot(a + tol >= b)
+  stopifnot(b + tol >= a)
+}
+
+
 # Return a function that calculates the expectation of random variables
 # with respect to a set of probability mass functions.
 # The function returned takes any set of random variables (specified
 # as a simple vector), and will return a matrix, with one row per
 # random variable, and one column per probability mass function.
-getexpectationsfunc = function(possibsize, pmfvalues) {
-  # helper function to convert list of pmf values to a matrix
-  .pmfstomatrix = function(possib, pmfvalues) {
-    stopifnot(is.numeric(pmfvalues))
-    result = matrix(pmfvalues, nrow=possib)
-    # all rows are normalised?
-    stopifnot(apply(result, 2, sum) == 1)
-    # all entries are non-negative?
-    stopifnot(result >= 0)
-    result
-  }
-
-  # helper function to convert list of random variable values to a matrix
-  .rvarstomatrix = function(possib, values) {
-    stopifnot(is.numeric(values))
-    matrix(values, ncol=possib, byrow=TRUE)
-  }
-
-  # main function
-  pmfmatrix = .pmfstomatrix(possibsize, pmfvalues)
+getexpectationsfunc = function(possibsize, pmfvalues, tol=1e-10) {
+  stopifnot(is.numeric(pmfvalues))
+  pmfmatrix = matrix(pmfvalues, nrow=possibsize)
+  # all rows are normalised?
+  .stopifnotalmostequal(apply(pmfmatrix, 2, sum), 1, tol=tol)
+  # all entries are non-negative?
+  stopifnot(pmfmatrix >= 0)
+  # return function that multiplies the matrices
   function(rvarvalues) {
-    .rvarstomatrix(possibsize, rvarvalues) %*% pmfmatrix
+    stopifnot(is.numeric(rvarvalues))
+    matrix(rvarvalues, ncol=possibsize, byrow=TRUE) %*% pmfmatrix
   }
 }
 
@@ -56,28 +55,34 @@ gethurwiczprevisionsfunc = function(getexpectations, optimism) {
 }
 
 # Return a function which tells you which random variables are
-# Gamma-maxi-"something", where something is any function of a list of
-# expectations (e.g. minimum, maximum, or something in between).
-isgammamaxisomethingfunc = function(getsomethingsfunc, tol=1e-10) {
+# Gamma-maxi-"something", where something is any function from random
+# variables to values (for example a function created with
+# getlowerprevisionsfunc, getupperprevisionsfunc, or
+# gethurwiczprevisionsfunc).
+isgammamaxisomethingfunc = function(getsomethings, tol=1e-10) {
   function(rvarvalues) {
-    somethings = getsomethingsfunc(rvarvalues)
+    somethings = getsomethings(rvarvalues)
     somethings >= (max(somethings) - tol)
   }
 }
 
-# Return a function which tells you which random variables are Gamma-maximin.
-isgammamaximinfunc = function(getexpectations) {
-  isgammamaxisomethingfunc(getlowerprevisionsfunc(getexpectations))
+# Return a function which tells you which random variables are
+# maximal.
+isintervalmaximalfunc = function(getexpectations, tol=1e-10) {
+  stopifnot(FALSE)
 }
 
-# Return a function which tells you which random variables are Gamma-maximax.
-isgammamaximaxfunc = function(getexpectations) {
-  isgammamaxisomethingfunc(getupperprevisionsfunc(getexpectations))
+# Return a function which tells you which random variables are
+# maximal.
+ismaximalfunc = function(getexpectations, tol=1e-10) {
+  stopifnot(FALSE)
 }
 
-# Return a function which tells you which random variables are Hurwicz optimal.
-isgammamaxihurwiczfunc = function(getexpectations, optimism) {
-  isgammamaxisomethingfunc(gethurwiczprevisionsfunc(getexpectations, optimism))
+# Return a function which tells you which random variables are Bayes
+# maximal (i.e. Bayes maximal with respect to some element of the
+# credal set specified).
+isbayesmaximalfunc = function(getexpectations, tol=1e-10) {
+  stopifnot(FALSE)
 }
 
 ################################################################################
@@ -92,15 +97,6 @@ getexpectations(c(2, 4, 1))
 ################################################################################
 # tests
 ################################################################################
-
-# helper function to check that two matrices are equal within tolerance
-.stopifnotalmostequal = function(a, b, tol=1e-10) {
-  #print("checking")
-  #print(a)
-  #print(b)
-  stopifnot(a + tol >= b)
-  stopifnot(b + tol >= a)
-}
 
 # simple usage: expectation of a single random variable
 test.expectation.1 = function() {
@@ -149,9 +145,9 @@ test.expectation.4 = function() {
   getlowerprevisions = getlowerprevisionsfunc(getexpectations)
   getupperprevisions = getupperprevisionsfunc(getexpectations)
   gethurwiczprevisions = gethurwiczprevisionsfunc(getexpectations, 0.5)
-  isgammamaximin = isgammamaximinfunc(getexpectations)
-  isgammamaximax = isgammamaximaxfunc(getexpectations)
-  isgammamaxihurwicz = isgammamaxihurwiczfunc(getexpectations, 0.5)
+  isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
+  isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
+  isgammamaxihurwicz = isgammamaxisomethingfunc(gethurwiczprevisions)
   rvars = c(
     3, 9, 2,
     4, 4, 4,
