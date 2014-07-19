@@ -99,22 +99,15 @@ isrobustbayesfunc = function(getexpectations, tol=1e-10) {
 }
 
 ################################################################################
-# example
-################################################################################
-
-"
-getexpectations = getexpectationsfunc(3, c(0.1, 0.5, 0.4))
-getexpectations(c(2, 4, 1))
-"
-
-################################################################################
 # tests
 ################################################################################
 
 # simple usage: expectation of a single random variable
 test.expectation.1 = function() {
-  getexpectations = getexpectationsfunc(2, c(0.4, 0.6))
-  .stopifnotalmostequal(getexpectations(c(3, 9)), 6.6)
+  pmf = c(0.4, 0.6)
+  rvar = c(3, 9)
+  getexpectations = getexpectationsfunc(2, pmf) # 2 = size of possibility space
+  .stopifnotalmostequal(getexpectations(rvar), 6.6)
 }
 
 # more complicated: expectation of three random variables
