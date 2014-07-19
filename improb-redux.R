@@ -1,8 +1,5 @@
 # helper function to check that two matrices are equal within tolerance
 .stopifnotalmostequal = function(a, b, tol=1e-10) {
-  #print("checking")
-  #print(a)
-  #print(b)
   stopifnot(a + tol >= b)
   stopifnot(b + tol >= a)
 }
@@ -14,7 +11,6 @@
 # as a simple vector), and will return a matrix, with one row per
 # random variable, and one column per probability mass function.
 getexpectationsfunc = function(possibsize, pmfvalues, tol=1e-10) {
-  stopifnot(is.numeric(pmfvalues))
   pmfmatrix = matrix(pmfvalues, nrow=possibsize)
   # all rows are normalised?
   .stopifnotalmostequal(apply(pmfmatrix, 2, sum), 1, tol=tol)
@@ -22,7 +18,6 @@ getexpectationsfunc = function(possibsize, pmfvalues, tol=1e-10) {
   stopifnot(pmfmatrix >= 0)
   # return function that multiplies the matrices
   function(rvarvalues) {
-    stopifnot(is.numeric(rvarvalues))
     matrix(rvarvalues, ncol=possibsize, byrow=TRUE) %*% pmfmatrix
   }
 }
