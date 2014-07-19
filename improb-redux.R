@@ -1,4 +1,4 @@
-make.pmfs = function(possib, values) {
+makepmfs = function(possib, values) {
   stopifnot(is.numeric(values))
   result = matrix(values, nrow=possib)
   # all rows are normalised?
@@ -8,12 +8,12 @@ make.pmfs = function(possib, values) {
   result
 }
 
-make.rvars = function(possib, values) {
+makervars = function(possib, values) {
   stopifnot(is.numeric(values))
   matrix(values, ncol=possib, byrow=TRUE)
 }
 
-get.expectations = function(rvars, pmfs) {
+getexpectations = function(rvars, pmfs) {
   rvars %*% pmfs
 }
 
@@ -22,9 +22,9 @@ get.expectations = function(rvars, pmfs) {
 ################################################################################
 
 "
-pmf = make.pmfs(3, c(0.1, 0.5, 0.4))
-rvar = make.rvars(3, c(2, 4, 1))
-get.expectations(pmf, rvar)
+pmf = makepmfs(3, c(0.1, 0.5, 0.4))
+rvar = makervars(3, c(2, 4, 1))
+getexpectations(pmf, rvar)
 "
 
 ################################################################################
@@ -39,37 +39,40 @@ get.expectations(pmf, rvar)
 
 # simple usage: expectation of a single random variable
 test.expectation.1 = function() {
-  pmf = make.pmfs(2, c(0.4, 0.6))
-  rvar = make.rvars(2, c(3, 9))
-  .stopifnotalmostequal(get.expectations(rvar, pmf), 6.6)
+  pmf = makepmfs(2, c(0.4, 0.6))
+  rvar = makervars(2, c(3, 9))
+  .stopifnotalmostequal(getexpectations(rvar, pmf), 6.6)
 }
 
 # more complicated: expectation of three random variables
 test.expectation.2 = function() {
-  pmf = make.pmfs(2, c(0.4, 0.6))
-  rvars = make.rvars(2,
+  pmf = makepmfs(2, c(0.4, 0.6))
+  rvars = makervars(2,
     c(3, 9,
       4, 4,
       0, 3))
-  .stopifnotalmostequal(get.expectations(rvars, pmf), c(6.6, 4, 1.8))
+  .stopifnotalmostequal(getexpectations(rvars, pmf), c(6.6, 4, 1.8))
 }
 
 # more complicated: expectation of multiple random variables with
 # respect to multiple pmfs
 test.expectation.3 = function() {
-  pmfs = make.pmfs(2,
-    c(0.4, 0.6,
-      0.1, 0.9))
-  rvars = make.rvars(2,
-    c(3, 9,
-      4, 4,
-      0, 3))
+  pmfs = makepmfs(3,
+    c(0.4, 0.5, 0.1,
+      0.1, 0.8, 0.1))
+  rvars = makervars(3,
+    c(3, 9, 2,
+      4, 4, 4,
+      0, 3, 6,
+      6, 2, 1))
   .stopifnotalmostequal(
-    get.expectations(rvars, pmfs),
+    getexpectations(rvars, pmfs),
     matrix(
-      c(6.6, 4, 1.8,
-        8.4, 4, 2.7),
-      byrow=TRUE, nrow=2)
+      c(5.9, 7.7,
+        4, 4,
+        2.1, 3.0,
+        3.5, 2.3),
+      byrow=TRUE, nrow=4)
     )
 }
 
