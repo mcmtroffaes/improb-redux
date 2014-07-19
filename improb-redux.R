@@ -78,6 +78,7 @@ bayescompare = function(exp1, exp2, tol=1e-10) { all(exp1 > exp2 + tol) }
 intervalcompare = function(exp1, exp2, tol=1e-10) { min(exp1) > max(exp2) + tol }
 
 # Return maximal elements based on partial order.
+# This is *not* the most efficient implementation, but it is simple.
 ismaximalfunc = function(getexpectations, comparefunc) {
   function(rvarvalues) {
     getcomparisonmatrix = getexpectationsapplyfunc2(
@@ -188,11 +189,41 @@ test.expectation.4 = function() {
   stopifnot(isrobustbayes(rvars) == c(TRUE, FALSE, FALSE, TRUE))
 }
 
+test.expectation.5 = function() {
+  # from the 2007 paper
+  pmfs = c(
+    0.28, 0.72,
+    0.5, 0.5, # need this convex combination for E-admissibility to be the same as robust Bayes in this problem
+    0.7, 0.3)
+  getexpectations = getexpectationsfunc(2, pmfs)
+  getlowerprevisions = getlowerprevisionsfunc(getexpectations)
+  getupperprevisions = getupperprevisionsfunc(getexpectations)
+  gethurwiczprevisions = gethurwiczprevisionsfunc(getexpectations, 0.5)
+  isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
+  isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
+  isbayesmaximal = ismaximalfunc(getexpectations, bayescompare)
+  isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
+  isrobustbayes = isrobustbayesfunc(getexpectations)
+  rvars = c(
+    4, 0,
+    0, 4,
+    3, 2,
+    1/2, 3,
+    47/20, 47/20,
+    41/10, -3/10)
+  stopifnot(isgammamaximin(rvars) == c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE))
+  stopifnot(isgammamaximax(rvars) == c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE))
+  stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE))
+  stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE))
+  stopifnot(isrobustbayes(rvars) == c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE))
+}
+
 test = function() {
   test.expectation.1()
   test.expectation.2()
   test.expectation.3()
   test.expectation.4()
+  test.expectation.5()
 }
 
 test()
