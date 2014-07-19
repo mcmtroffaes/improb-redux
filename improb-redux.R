@@ -43,17 +43,17 @@ getexpectationsapplyfunc2 = function(getexpectations, func) {
   }
 }
 
-# Return a function which evaluates the lower prevision of random variables.
+# Return a function which evaluates the lower prevision.
 getlowerprevisionsfunc = function(getexpectations) {
   getexpectationsapplyfunc(getexpectations, min)
 }
 
-# Return a function which evaluates the upper prevision of random variables.
+# Return a function which evaluates the upper prevision.
 getupperprevisionsfunc = function(getexpectations) {
   getexpectationsapplyfunc(getexpectations, max)
 }
 
-# Return a function which evaluate the "Hurwicz" prevision of random variables.
+# Return a function which evaluates the "Hurwicz" prevision.
 gethurwiczprevisionsfunc = function(getexpectations, optimism) {
   .hurwicz = function(expectations) {
     optimism * max(expectations) + (1 - optimism) * min(expectations)
@@ -62,7 +62,7 @@ gethurwiczprevisionsfunc = function(getexpectations, optimism) {
 }
 
 # Return a function which tells you which random variables are
-# Gamma-maxi-"something", where something is any function from random
+# Gamma-maxi-"something", where "something" is any function from random
 # variables to values (for example a function created with
 # getlowerprevisionsfunc, getupperprevisionsfunc, or
 # gethurwiczprevisionsfunc).
