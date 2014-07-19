@@ -1,55 +1,83 @@
-# helper function to convert list of pmf values to a matrix
-.pmfstomatrix = function(possib, pmfsvalues) {
-  stopifnot(is.numeric(pmfsvalues))
-  result = matrix(pmfsvalues, nrow=possib)
-  # all rows are normalised?
-  stopifnot(apply(result, 2, sum) == 1)
-  # all entries are non-negative?
-  stopifnot(result >= 0)
-  result
-}
+# Return a function that calculates the expectation of random variables
+# with respect to a set of probability mass functions.
+# The function returned takes any set of random variables (specified
+# as a simple vector), and will return a matrix, with one row per
+# random variable, and one column per probability mass function.
+getexpectationsfunc = function(possibsize, pmfvalues) {
+  # helper function to convert list of pmf values to a matrix
+  .pmfstomatrix = function(possib, pmfvalues) {
+    stopifnot(is.numeric(pmfvalues))
+    result = matrix(pmfvalues, nrow=possib)
+    # all rows are normalised?
+    stopifnot(apply(result, 2, sum) == 1)
+    # all entries are non-negative?
+    stopifnot(result >= 0)
+    result
+  }
 
-# helper function to convert list of random variable values to a matrix
-.rvarstomatrix = function(possib, values) {
-  stopifnot(is.numeric(values))
-  matrix(values, ncol=possib, byrow=TRUE)
-}
+  # helper function to convert list of random variable values to a matrix
+  .rvarstomatrix = function(possib, values) {
+    stopifnot(is.numeric(values))
+    matrix(values, ncol=possib, byrow=TRUE)
+  }
 
-getexpectationsfunc = function(possibsize, pmfsvalues) {
-  pmfmatrix = .pmfstomatrix(possibsize, pmfsvalues)
-  function(rvarsvalues) {
-    .rvarstomatrix(possibsize, rvarsvalues) %*% pmfmatrix
+  # main function
+  pmfmatrix = .pmfstomatrix(possibsize, pmfvalues)
+  function(rvarvalues) {
+    .rvarstomatrix(possibsize, rvarvalues) %*% pmfmatrix
   }
 }
 
-# helper function to apply a function on expectations
-.getexpectationsapplyfunc = function(getexpectations, func) {
-  function(rvarsvalues) {
-    apply(getexpectations(rvarsvalues), 1, func)
+# Return a function which calls getexpectations, and then applies a
+# vector function on each row (i.e. to calculate minimum expectation,
+# maximum expectation, etc.).
+getexpectationsapplyfunc = function(getexpectations, func) {
+  function(rvarvalues) {
+    apply(getexpectations(rvarvalues), 1, func)
   }
 }
 
+# Return a function which evaluates the lower prevision of random variables.
 getlowerprevisionsfunc = function(getexpectations) {
-  .getexpectationsapplyfunc(getexpectations, min)
+  getexpectationsapplyfunc(getexpectations, min)
 }
 
+# Return a function which evaluates the upper prevision of random variables.
 getupperprevisionsfunc = function(getexpectations) {
-  .getexpectationsapplyfunc(getexpectations, max)
+  getexpectationsapplyfunc(getexpectations, max)
 }
 
-.isgammamaxixxxfunc = function(getxxxsfunc, tol=1e-10) {
-  function(rvarsvalues) {
-    xxxs = getxxxsfunc(rvarsvalues)
-    xxxs >= (max(xxxs) - tol)
+# Return a function which evaluate the "Hurwicz" prevision of random variables.
+gethurwiczprevisionsfunc = function(getexpectations, optimism) {
+  .hurwicz = function(expectations) {
+    optimism * max(expectations) + (1 - optimism) * min(expectations)
+  }
+  getexpectationsapplyfunc(getexpectations, .hurwicz)
+}
+
+# Return a function which tells you which random variables are
+# Gamma-maxi-"something", where something is any function of a list of
+# expectations (e.g. minimum, maximum, or something in between).
+isgammamaxisomethingfunc = function(getsomethingsfunc, tol=1e-10) {
+  function(rvarvalues) {
+    somethings = getsomethingsfunc(rvarvalues)
+    somethings >= (max(somethings) - tol)
   }
 }
 
+# Return a function which tells you which random variables are Gamma-maximin.
 isgammamaximinfunc = function(getexpectations) {
-  .isgammamaxixxxfunc(getlowerprevisionsfunc(getexpectations))
+  isgammamaxisomethingfunc(getlowerprevisionsfunc(getexpectations))
 }
 
-isgammamaximaxfunc = function(getexpectations, tol=1e-10) {
-  .isgammamaxixxxfunc(getupperprevisionsfunc(getexpectations))
+# Return a function which tells you which random variables are Gamma-maximax.
+isgammamaximaxfunc = function(getexpectations) {
+  isgammamaxisomethingfunc(getupperprevisionsfunc(getexpectations))
+}
+
+# Return a function which tells you which random variables are Hurwicz optimal.
+isgammamaxihurwiczfunc = function(getexpectations, optimism) {
+  isgammamaxisomethingfunc(gethurwiczprevisionsfunc(getexpectations, optimism))
 }
 
 ################################################################################
@@ -120,8 +148,10 @@ test.expectation.4 = function() {
   getexpectations = getexpectationsfunc(3, pmfs) # 3 = size of possibility space
   getlowerprevisions = getlowerprevisionsfunc(getexpectations)
   getupperprevisions = getupperprevisionsfunc(getexpectations)
+  gethurwiczprevisions = gethurwiczprevisionsfunc(getexpectations, 0.5)
   isgammamaximin = isgammamaximinfunc(getexpectations)
   isgammamaximax = isgammamaximaxfunc(getexpectations)
+  isgammamaxihurwicz = isgammamaxihurwiczfunc(getexpectations, 0.5)
   rvars = c(
     3, 9, 2,
     4, 4, 4,
@@ -129,8 +159,10 @@ test.expectation.4 = function() {
     6, 2, 1)
   .stopifnotalmostequal(getlowerprevisions(rvars), c(4, 4, 1.8, 2.3))
   .stopifnotalmostequal(getupperprevisions(rvars), c(7.7, 4, 3, 4.2))
+  .stopifnotalmostequal(gethurwiczprevisions(rvars), c(5.85, 4, 2.4, 3.25))
   stopifnot(isgammamaximin(rvars) == c(TRUE, TRUE, FALSE, FALSE))
   stopifnot(isgammamaximax(rvars) == c(TRUE, FALSE, FALSE, FALSE))
+  stopifnot(isgammamaxihurwicz(rvars) == c(TRUE, FALSE, FALSE, FALSE))
 }
 
 test = function() {
