@@ -31,6 +31,18 @@ getexpectationsapplyfunc = function(getexpectations, func) {
   }
 }
 
+# Return a function which applies a pairwise vector function to
+# expectations (e.g. to determine maximality, interval dominance,
+# etc.). The result is a square matrix, with an entry for each pair of
+# random variables.
+getexpectationsapplyfunc2 = function(getexpectations, func) {
+  function(rvarvalues) {
+    expectations = getexpectations(rvarvalues)
+    apply(expectations, 1, function(exp1) {
+      apply(expectations, 1, function(exp2) { func(exp1, exp2) }) })
+  }
+}
+
 # Return a function which evaluates the lower prevision of random variables.
 getlowerprevisionsfunc = function(getexpectations) {
   getexpectationsapplyfunc(getexpectations, min)
@@ -61,23 +73,28 @@ isgammamaxisomethingfunc = function(getsomethings, tol=1e-10) {
   }
 }
 
-# Return a function which tells you which random variables are
-# maximal.
-isintervalmaximalfunc = function(getexpectations, tol=1e-10) {
-  stopifnot(FALSE)
-}
+# Partial orders based on expectation values.
+bayescompare = function(exp1, exp2, tol=1e-10) { all(exp1 > exp2 + tol) }
+intervalcompare = function(exp1, exp2, tol=1e-10) { min(exp1) > max(exp2) + tol }
 
-# Return a function which tells you which random variables are
-# maximal.
-ismaximalfunc = function(getexpectations, tol=1e-10) {
-  stopifnot(FALSE)
+# Return maximal elements based on partial order.
+ismaximalfunc = function(getexpectations, comparefunc) {
+  function(rvarvalues) {
+    getcomparisonmatrix = getexpectationsapplyfunc2(
+      getexpectations, comparefunc)
+    apply(getcomparisonmatrix(rvarvalues), 1, function(row) { !any(row) })
+  }
 }
 
 # Return a function which tells you which random variables are Bayes
 # maximal (i.e. Bayes maximal with respect to some element of the
 # credal set specified).
-isbayesmaximalfunc = function(getexpectations, tol=1e-10) {
-  stopifnot(FALSE)
+isrobustbayesfunc = function(getexpectations, tol=1e-10) {
+  function(rvarvalues) {
+    expectations = getexpectations(rvarvalues)
+    maxexpectations = apply(expectations, 2, function(col) { col >= (max(col) - tol) })
+    apply(maxexpectations, 1, function(row) { any(row) })
+  }
 }
 
 ################################################################################
@@ -143,17 +160,32 @@ test.expectation.4 = function() {
   isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
   isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
   isgammamaxihurwicz = isgammamaxisomethingfunc(gethurwiczprevisions)
+  isbayesmaximal = ismaximalfunc(getexpectations, bayescompare)
+  isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
+  isrobustbayes = isrobustbayesfunc(getexpectations)
   rvars = c(
     3, 9, 2,
     4, 4, 4,
     0, 3, 6,
     6, 2, 1)
+  .stopifnotalmostequal(
+    getexpectations(rvars),
+    matrix(
+      c(5.9, 7.7, 4,
+        4, 4, 4,
+        2.1, 3.0, 1.8,
+        3.5, 2.3, 4.2),
+      byrow=TRUE, nrow=4)
+    )
   .stopifnotalmostequal(getlowerprevisions(rvars), c(4, 4, 1.8, 2.3))
   .stopifnotalmostequal(getupperprevisions(rvars), c(7.7, 4, 3, 4.2))
   .stopifnotalmostequal(gethurwiczprevisions(rvars), c(5.85, 4, 2.4, 3.25))
   stopifnot(isgammamaximin(rvars) == c(TRUE, TRUE, FALSE, FALSE))
   stopifnot(isgammamaximax(rvars) == c(TRUE, FALSE, FALSE, FALSE))
   stopifnot(isgammamaxihurwicz(rvars) == c(TRUE, FALSE, FALSE, FALSE))
+  stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
+  stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
+  stopifnot(isrobustbayes(rvars) == c(TRUE, FALSE, FALSE, TRUE))
 }
 
 test = function() {
