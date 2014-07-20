@@ -4,6 +4,9 @@
   stopifnot(b + tol >= a)
 }
 
+###############################################################################
+# calculating expectations and functions of expectations
+###############################################################################
 
 # Return a function that calculates the expectation of random variables
 # with respect to a set of probability mass functions.
@@ -61,6 +64,10 @@ gethurwiczprevisionsfunc = function(getexpectations, optimism) {
   getexpectationsapplyfunc(getexpectations, .hurwicz)
 }
 
+###############################################################################
+# optimality criteria
+###############################################################################
+
 # Return a function which tells you which random variables are
 # Gamma-maxi-"something", where "something" is any function from random
 # variables to values (for example a function created with
@@ -93,7 +100,11 @@ ismaximalfunc = function(getexpectations, comparefunc) {
 isrobustbayesfunc = function(getexpectations, tol=1e-10) {
   function(rvarvalues) {
     expectations = getexpectations(rvarvalues)
+    # for each probability mass function (column), identify the random
+    # variables (rows) that have maximal expectation
     maxexpectations = apply(expectations, 2, function(col) { col >= (max(col) - tol) })
+    # for each random variable (row), check if it had maximal
+    # expectation with respect to any probability mass function
     apply(maxexpectations, 1, function(row) { any(row) })
   }
 }
