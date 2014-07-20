@@ -125,11 +125,13 @@ isrobustbayesfunc = function(getexpectations, tol=1e-10) {
 # Apply Bayes's theorem.
 getposteriorpmf = function(paramsize, priorpmf, likelihoodpmf) {
   likelihoodmat = matrix(likelihoodpmf, nrow=paramsize, byrow=TRUE)
-  posteriormat = apply(likelihoodmat, 2, function(col) { col * priorpmf })
-  c(apply(posteriormat, 2, function(col) { col / sum(col) }))
+  c(apply(likelihoodmat, 2, function(col) {
+    prod = col * priorpmf
+    prod / sum(prod)
+  }))
 }
 
-isposteriorbayes = function(paramsize, posteriorpmf, utility) {
+isbayesoptimal = function(paramsize, posteriorpmf, utility) {
   stopifnot(FALSE)
 }
 
