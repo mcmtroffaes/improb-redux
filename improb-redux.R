@@ -65,7 +65,7 @@ gethurwiczprevisionsfunc = function(getexpectations, optimism) {
 }
 
 ###############################################################################
-# optimality criteria
+# optimality criteria based on the full distribution (no data)
 ###############################################################################
 
 # Return a function which tells you which random variables are
@@ -81,15 +81,24 @@ isgammamaxisomethingfunc = function(getsomethings, tol=1e-10) {
 }
 
 # Partial orders based on expectation values.
-bayescompare = function(exp1, exp2, tol=1e-10) { all(exp1 > exp2 + tol) }
-intervalcompare = function(exp1, exp2, tol=1e-10) { min(exp1) > max(exp2) + tol }
+bayescompare = function(exp1, exp2, tol=1e-10) {
+  all(exp1 > exp2 + tol)
+}
+
+waldcompare = function(exp1, exp2, tol=1e-10) {
+  all(exp1 + tol >= exp2) && any(exp1 > exp2 + tol)
+}
+
+intervalcompare = function(exp1, exp2, tol=1e-10) {
+  min(exp1) > max(exp2) + tol
+}
 
 # Return maximal elements based on partial order.
 # This is *not* the most efficient implementation, but it is simple.
-ismaximalfunc = function(getexpectations, comparefunc) {
+ismaximalfunc = function(getexpectations, compare) {
   function(rvarvalues) {
     getcomparisonmatrix = getexpectationsapplyfunc2(
-      getexpectations, comparefunc)
+      getexpectations, compare)
     apply(getcomparisonmatrix(rvarvalues), 1, function(row) { !any(row) })
   }
 }
@@ -107,6 +116,63 @@ isrobustbayesfunc = function(getexpectations, tol=1e-10) {
     # expectation with respect to any probability mass function
     apply(maxexpectations, 1, function(row) { any(row) })
   }
+}
+
+################################################################################
+# Wald's optimality
+################################################################################
+
+# list all strategies in a matrix (one row per strategy, enumerating a
+# decision for each possible data value)
+getstrategies = function(datasize, decisionsize) {
+  args = lapply(1:datasize, function(x) { 1:decisionsize })
+  result = as.matrix(expand.grid(args))
+  dimnames(result) <- NULL
+  result
+}
+
+# Get Wald's expected utility for any given strategy.
+getwaldutilityfunc = function(datasize, likelihoodpmf, utility) {
+  paramsize = length(likelihoodpmf) %/% datasize
+  decisionsize = length(utility) %/% paramsize
+  utilitymat = matrix(utility, nrow=decisionsize, byrow=TRUE)
+  likelihoodmat = matrix(likelihoodpmf, nrow=paramsize, byrow=TRUE)
+  getwaldexpectations = sapply(
+    1:paramsize, function(param) {
+      getexpectationsfunc(datasize, likelihoodmat[param,])
+    })
+
+  function(strategy) {
+    stopifnot(datasize == length(strategy))
+    sapply(
+      1:paramsize,
+      function(param) {
+        rvar = sapply(strategy, function(decision) { utilitymat[decision,param] })
+        getwaldexpectations[[param]](rvar)[1,1]
+      })
+  }
+}
+
+getwaldutilities = function(datasize, likelihoodpmf, utility) {
+  paramsize = length(likelihoodpmf) %/% datasize
+  decisionsize = length(utility) %/% paramsize
+  getwaldutility = getwaldutilityfunc(datasize, likelihoodpmf, utility)
+  strategies = getstrategies(datasize, decisionsize)
+  t(apply(strategies, 1, getwaldutility))
+}
+
+iswaldadmissible = function(datasize, likelihoodpmf, utility) {
+  paramsize = length(likelihoodpmf) %/% datasize
+  decisionsize = length(utility) %/% paramsize
+  getexpectations = function(rvarvalues) {
+    matrix(rvarvalues, ncol=paramsize, byrow=TRUE)
+  }
+  ismaximal = ismaximalfunc(getexpectations, waldcompare)
+  ismaximal(c(t(getwaldutilities(datasize, likelihoodpmf, utility))))
+}
+
+isposteriorbayes = function(paramsize, posteriorpmf, utility) {
+  stopifnot(FALSE)
 }
 
 ################################################################################
@@ -222,12 +288,44 @@ test.expectation.5 = function() {
   stopifnot(isrobustbayes(rvars) == c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE))
 }
 
+test.expectation.6 = function() {
+  likelihoodpmf = c(
+    0.9, 0.1,
+    0.3, 0.7)
+  utility = c(
+    3, -1,
+    0, 0)
+  stopifnot(
+    getstrategies(datasize=2, decisionsize=2)
+    ==
+    matrix(c(
+      1,1,
+      2,1,
+      1,2,
+      2,2), byrow=TRUE, nrow=4))
+  .stopifnotalmostequal(
+    getwaldutilities(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
+    ,
+    matrix(c(
+      3, -1,
+      0.3, -0.7,
+      2.7, -0.3,
+      0, 0
+      ), byrow=TRUE, nrow=4))
+  stopifnot(
+    iswaldadmissible(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
+    ==
+    c(TRUE, FALSE, TRUE, TRUE)
+    )
+}
+
 test = function() {
   test.expectation.1()
   test.expectation.2()
   test.expectation.3()
   test.expectation.4()
   test.expectation.5()
+  test.expectation.6()
 }
 
 test()
