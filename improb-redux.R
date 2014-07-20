@@ -119,6 +119,21 @@ isrobustbayesfunc = function(getexpectations, tol=1e-10) {
 }
 
 ################################################################################
+# Bayes optimality
+################################################################################
+
+# Apply Bayes's theorem.
+getposteriorpmf = function(paramsize, priorpmf, likelihoodpmf) {
+  likelihoodmat = matrix(likelihoodpmf, nrow=paramsize, byrow=TRUE)
+  posteriormat = apply(likelihoodmat, 2, function(col) { col * priorpmf })
+  c(apply(posteriormat, 2, function(col) { col / sum(col) }))
+}
+
+isposteriorbayes = function(paramsize, posteriorpmf, utility) {
+  stopifnot(FALSE)
+}
+
+################################################################################
 # Wald's optimality
 ################################################################################
 
@@ -169,10 +184,6 @@ iswaldadmissible = function(datasize, likelihoodpmf, utility) {
   }
   ismaximal = ismaximalfunc(getexpectations, waldcompare)
   ismaximal(c(t(getwaldutilities(datasize, likelihoodpmf, utility))))
-}
-
-isposteriorbayes = function(paramsize, posteriorpmf, utility) {
-  stopifnot(FALSE)
 }
 
 ################################################################################
@@ -319,6 +330,16 @@ test.expectation.6 = function() {
     )
 }
 
+test.expectation.7 = function() {
+  priorpmf = c(0.4, 0.6)
+  likelihoodpmf = c(
+    0.9, 0.1,
+    0.3, 0.7)
+  .stopifnotalmostequal(
+    getposteriorpmf(2, priorpmf, likelihoodpmf),
+    c(2/3, 1/3, 2/23, 21/23))
+}
+
 test = function() {
   test.expectation.1()
   test.expectation.2()
@@ -326,6 +347,7 @@ test = function() {
   test.expectation.4()
   test.expectation.5()
   test.expectation.6()
+  test.expectation.7()
 }
 
 test()
