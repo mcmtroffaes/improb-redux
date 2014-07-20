@@ -360,8 +360,7 @@ test.expectation.7 = function() {
     c(2/3, 1/3, 2/23, 21/23))
 }
 
-test.expectation.8 = function() {
-  priorpmf = c(0.4, 0.6)
+test.expectation.8.detail = function(priorpmf, outcome) {
   likelihoodpmf = c(
     0.9, 0.1,
     0.3, 0.7)
@@ -369,7 +368,29 @@ test.expectation.8 = function() {
   utility = c(
     3, -1,
     0, 0)
-  print(isbayesoptimal(2, posteriorpmf, utility))
+  stopifnot(
+    isbayesoptimal(2, posteriorpmf, utility) ==
+    matrix(outcome, byrow=TRUE, nrow=2))
+}
+
+test.expectation.8 = function() {
+  # outcome:
+  #  d(y=0.5) == 1   d(y==2) == 1
+  #  d(y=0.5) == 2   d(y==2) == 2
+  test.expectation.8.detail(
+    c(0.4, 0.6),
+    c(TRUE, FALSE,
+      FALSE, TRUE))
+  test.expectation.8.detail(
+    c(1, 0),
+    # always take d=1
+    c(TRUE, TRUE,
+      FALSE, FALSE))
+  test.expectation.8.detail(
+    c(0, 1),
+    # always take d=2
+    c(FALSE, FALSE,
+      TRUE, TRUE))
 }
 
 test = function() {
