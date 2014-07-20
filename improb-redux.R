@@ -64,6 +64,15 @@ gethurwiczprevisionsfunc = function(getexpectations, optimism) {
   getexpectationsapplyfunc(getexpectations, .hurwicz)
 }
 
+# Return a function which evaluates the precise prevision.
+getpreciseprevisionsfunc = function(getexpectations) {
+  .precise = function(expectations) {
+    stopifnot(length(expectations) == 1)
+    expectations[1]
+  }
+  getexpectationsapplyfunc(getexpectations, .precise)
+}
+
 ###############################################################################
 # optimality criteria based on the full distribution (no data)
 ###############################################################################
@@ -132,7 +141,17 @@ getposteriorpmf = function(paramsize, priorpmf, likelihoodpmf) {
 }
 
 isbayesoptimal = function(paramsize, posteriorpmf, utility) {
-  stopifnot(FALSE)
+  # Repeat Bayes analysis for each posterior.
+  posteriormat = matrix(posteriorpmf, ncol=paramsize, byrow=TRUE)
+  # utility matrix lists outcome per decision, so it is already in the
+  # right format to be seen as a set of random variables
+  rvars = utility
+  apply(posteriormat, 1, function(pmf) {
+    getposteriorexpectation = getexpectationsfunc(paramsize, pmf)
+    getpreciseprevision = getpreciseprevisionsfunc(getposteriorexpectation)
+    isbayes = isgammamaxisomethingfunc(getpreciseprevision)
+    isbayes(rvars)
+    })
 }
 
 ################################################################################
@@ -341,6 +360,18 @@ test.expectation.7 = function() {
     c(2/3, 1/3, 2/23, 21/23))
 }
 
+test.expectation.8 = function() {
+  priorpmf = c(0.4, 0.6)
+  likelihoodpmf = c(
+    0.9, 0.1,
+    0.3, 0.7)
+  posteriorpmf = getposteriorpmf(2, priorpmf, likelihoodpmf)
+  utility = c(
+    3, -1,
+    0, 0)
+  print(isbayesoptimal(2, posteriorpmf, utility))
+}
+
 test = function() {
   test.expectation.1()
   test.expectation.2()
@@ -349,6 +380,7 @@ test = function() {
   test.expectation.5()
   test.expectation.6()
   test.expectation.7()
+  test.expectation.8()
 }
 
 test()
