@@ -168,14 +168,16 @@ getwaldutilityfunc = function(datasize, likelihoodpmf, utility) {
   }
 }
 
+# Get all of Wald's expected utilities.
 getwaldutilities = function(datasize, likelihoodpmf, utility) {
   paramsize = length(likelihoodpmf) %/% datasize
   decisionsize = length(utility) %/% paramsize
   getwaldutility = getwaldutilityfunc(datasize, likelihoodpmf, utility)
   strategies = getstrategies(datasize, decisionsize)
-  t(apply(strategies, 1, getwaldutility))
+  c(apply(strategies, 1, getwaldutility))
 }
 
+# Find all Wald admissible strategies.
 iswaldadmissible = function(datasize, likelihoodpmf, utility) {
   paramsize = length(likelihoodpmf) %/% datasize
   decisionsize = length(utility) %/% paramsize
@@ -183,7 +185,7 @@ iswaldadmissible = function(datasize, likelihoodpmf, utility) {
     matrix(rvarvalues, ncol=paramsize, byrow=TRUE)
   }
   ismaximal = ismaximalfunc(getexpectations, waldcompare)
-  ismaximal(c(t(getwaldutilities(datasize, likelihoodpmf, utility))))
+  ismaximal(getwaldutilities(datasize, likelihoodpmf, utility))
 }
 
 ################################################################################
@@ -315,14 +317,11 @@ test.expectation.6 = function() {
       1,2,
       2,2), byrow=TRUE, nrow=4))
   .stopifnotalmostequal(
-    getwaldutilities(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
-    ,
-    matrix(c(
-      3, -1,
+    getwaldutilities(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility),
+    c(3, -1,
       0.3, -0.7,
       2.7, -0.3,
-      0, 0
-      ), byrow=TRUE, nrow=4))
+      0, 0))
   stopifnot(
     iswaldadmissible(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
     ==
