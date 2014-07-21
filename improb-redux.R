@@ -15,10 +15,10 @@
 # random variable, and one column per probability mass function.
 getexpectationsfunc = function(possibsize, pmfvalues, tol=1e-10) {
   pmfmatrix = matrix(pmfvalues, nrow=possibsize)
-  # all rows are normalised?
+  # all columns sum to one?
   .stopifnotalmostequal(apply(pmfmatrix, 2, sum), 1, tol=tol)
   # all entries are non-negative?
-  stopifnot(pmfmatrix >= 0)
+  stopifnot(pmfmatrix + tol >= 0)
   # return function that multiplies the matrices
   function(rvarvalues) {
     matrix(rvarvalues, ncol=possibsize, byrow=TRUE) %*% pmfmatrix
