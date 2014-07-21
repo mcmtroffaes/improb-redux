@@ -25,18 +25,23 @@ test.conditional.1 = function() {
     0.25, 0.4, 0.35,
     0.5, 0.4, 0.1,
     0.5, 0.5, 0)
-  getconditionalexpectations = getconditionalexpectationsfunc(3, pmfs)
   event = c(FALSE, TRUE, TRUE)
+  getconditionalexpectations = getconditionalexpectationsfunc(3, pmfs)
+  getexpectations = getconditionalexpectations(event)
   rvars = c(
     1, 0,
     0, 1)
   .stopifnotalmostequal(
-    getconditionalexpectations(event)(rvars),
+    getexpectations(rvars),
     c(1, 0,
       70/75, 5/75,
       40/75, 35/75,
       0.8, 0.2,
       1, 0))
+  getlowerprevisions = getlowerprevisionsfunc(getexpectations)
+  getupperprevisions = getupperprevisionsfunc(getexpectations)
+  .stopifnotalmostequal(getlowerprevisions(c(2, -3)), -1/3)
+  .stopifnotalmostequal(getupperprevisions(c(2, -3)), 2)
 }
 
 test.conditional.2 = function() {
