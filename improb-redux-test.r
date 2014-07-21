@@ -7,7 +7,7 @@ source("improb-redux.r")
 test.getrows.helper = function(numrows, invals, rows, outvals) {
   inmat = matrix(invals, byrow=TRUE, nrow=numrows)
   outmat = matrix(outvals, byrow=TRUE, ncol=ncol(inmat))
-  .stopifnotalmostequal(.getrows(inmat, rows), outmat)
+  .stopifnotalmostequal(inmat[rows,,drop=FALSE], outmat)
 }
 
 test.getrows.1 = function() {

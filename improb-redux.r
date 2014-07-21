@@ -4,19 +4,6 @@
   stopifnot(b + tol >= a)
 }
 
-# helper function to extract rows from a matrix in a sane way
-# (always returns a matrix, unlike R's mat[rows,])
-.getrows = function(mat, rows) {
-  result = mat[rows,]
-  if (length(rows) == 1) {
-    result = t(as.matrix(result))
-  } else if (ncol(mat) == 1) {
-    result = as.matrix(result)
-  }
-  stopifnot(is.matrix(result))
-  result
-}
-
 ###############################################################################
 # calculating expectations and functions of expectations
 ###############################################################################
@@ -36,7 +23,9 @@ getconditionalexpectationsfunc = function(possibsize, pmfs, tol=1e-10) {
   function(event) {
     stopifnot(length(event) == possibsize)
     cpmfmatrix = apply(
-      .getrows(pmfmatrix, which(event)), 2,
+      # m[rows,,drop=FALSE] picks the rows but makes sure the result
+      # remains a matrix
+      pmfmatrix[which(event),,drop=FALSE], 2,
       function(col) { col / sum(col) })
     # return function that multiplies the matrices
     function(rvars) {
