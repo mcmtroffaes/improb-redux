@@ -14,6 +14,9 @@ rvars = c(
   440, 260,
   420, 300,
   370, 370)
+getexpectations(rvars)
+getlowerprevisions(rvars)
+getupperprevisions(rvars)
 isgammamaximin(rvars)
 isgammamaximax(rvars)
 isintervalmaximal(rvars)
