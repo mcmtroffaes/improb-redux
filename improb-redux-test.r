@@ -136,7 +136,7 @@ test.expectation.6 = function() {
       2.7, -0.3,
       0, 0))
   stopifnot(
-    iswaldadmissible(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
+    iswaldstrategy(datasize=2, likelihoodpmf=likelihoodpmf, utility=utility)
     ==
     c(TRUE, FALSE, TRUE, TRUE)
     )
@@ -161,7 +161,7 @@ test.expectation.8.detail = function(priorpmf, outcome) {
     3, -1,
     0, 0)
   stopifnot(
-    isbayesoptimal(2, posteriorpmf, utility) ==
+    isbayesstrategy(2, posteriorpmf, utility) ==
     matrix(outcome, byrow=TRUE, nrow=2))
 }
 

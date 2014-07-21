@@ -127,8 +127,12 @@ isrobustbayesfunc = function(getexpectations, tol=1e-10) {
   }
 }
 
+###############################################################################
+# optimality criteria that also take data into account (strategies)
+###############################################################################
+
 ################################################################################
-# Bayes optimality
+# Bayes strategies
 ################################################################################
 
 # Apply Bayes's theorem.
@@ -140,7 +144,7 @@ getposteriorpmf = function(paramsize, priorpmf, likelihoodpmf) {
   }))
 }
 
-isbayesoptimal = function(paramsize, posteriorpmf, utility) {
+isbayesstrategy = function(paramsize, posteriorpmf, utility) {
   # Repeat Bayes analysis for each posterior.
   posteriormat = matrix(posteriorpmf, ncol=paramsize, byrow=TRUE)
   # utility matrix lists outcome per decision, so it is already in the
@@ -199,7 +203,7 @@ getwaldutilities = function(datasize, likelihoodpmf, utility) {
 }
 
 # Find all Wald admissible strategies.
-iswaldadmissible = function(datasize, likelihoodpmf, utility) {
+iswaldstrategy = function(datasize, likelihoodpmf, utility) {
   paramsize = length(likelihoodpmf) %/% datasize
   decisionsize = length(utility) %/% paramsize
   getexpectations = function(rvarvalues) {
