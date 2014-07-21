@@ -4,6 +4,45 @@ source("improb-redux.r")
 # tests
 ################################################################################
 
+test.getrows.helper = function(numrows, invals, rows, outvals) {
+  inmat = matrix(invals, byrow=TRUE, nrow=numrows)
+  outmat = matrix(outvals, byrow=TRUE, ncol=ncol(inmat))
+  .stopifnotalmostequal(.getrows(inmat, rows), outmat)
+}
+
+test.getrows.1 = function() {
+  test.getrows.helper(3, c(1,2,3,4,5,6,7,8,9), c(2,3), c(4,5,6,7,8,9))
+  test.getrows.helper(3, c(1,2,3,4,5,6,7,8,9), 2, c(4,5,6))
+  test.getrows.helper(1, c(1,2,3), 1, c(1,2,3))
+  test.getrows.helper(3, c(7,8,9), c(2,3), c(8,9))
+  test.getrows.helper(3, c(7,8,9), c(2), c(8))
+}
+
+test.conditional.1 = function() {
+  pmfs = c(
+    0.3, 0.7, 0,
+    0.25, 0.7, 0.05,
+    0.25, 0.4, 0.35,
+    0.5, 0.4, 0.1,
+    0.5, 0.5, 0)
+  getconditionalexpectations = getconditionalexpectationsfunc(3, pmfs)
+  event = c(FALSE, TRUE, TRUE)
+  rvars = c(
+    1, 0,
+    0, 1)
+  .stopifnotalmostequal(
+    getconditionalexpectations(event)(rvars),
+    c(1, 0,
+      70/75, 5/75,
+      40/75, 35/75,
+      0.8, 0.2,
+      1, 0))
+  event = c(TRUE, FALSE, FALSE)
+  rvars = c(1)
+  .stopifnotalmostequal(
+    getconditionalexpectations(event)(rvars), c(1))
+}
+
 # simple usage: expectation of a single random variable
 test.expectation.1 = function() {
   pmf = c(0.4, 0.6)
@@ -186,6 +225,8 @@ test.expectation.8 = function() {
 }
 
 test = function() {
+  test.getrows.1()
+  test.conditional.1()
   test.expectation.1()
   test.expectation.2()
   test.expectation.3()

@@ -4,25 +4,51 @@
   stopifnot(b + tol >= a)
 }
 
+# helper function to extract rows from a matrix in a sane way
+# (always returns a matrix, unlike R's mat[rows,])
+.getrows = function(mat, rows) {
+  result = mat[rows,]
+  if (length(rows) == 1) {
+    result = t(as.matrix(result))
+  } else if (ncol(mat) == 1) {
+    result = as.matrix(result)
+  }
+  stopifnot(is.matrix(result))
+  result
+}
+
 ###############################################################################
 # calculating expectations and functions of expectations
 ###############################################################################
 
-# Return a function that calculates the expectation of random variables
-# with respect to a set of probability mass functions.
-# The function returned takes any set of random variables (specified
-# as a simple vector), and will return a matrix, with one row per
-# random variable, and one column per probability mass function.
-getexpectationsfunc = function(possibsize, pmfvalues, tol=1e-10) {
-  pmfmatrix = matrix(pmfvalues, nrow=possibsize)
+# Return a function that calculates the conditional expectation of
+# random variables with respect to a set of probability mass
+# functions. Giving it an event, this function returns another
+# function which takes any set of random variables (specified as a
+# simple vector), and will return a matrix, with one row per random
+# variable, and one column per conditional probability mass function.
+getconditionalexpectationsfunc = function(possibsize, pmfs, tol=1e-10) {
+  pmfmatrix = matrix(pmfs, nrow=possibsize)
   # all columns sum to one?
   .stopifnotalmostequal(apply(pmfmatrix, 2, sum), 1, tol=tol)
   # all entries are non-negative?
   stopifnot(pmfmatrix + tol >= 0)
-  # return function that multiplies the matrices
-  function(rvarvalues) {
-    matrix(rvarvalues, ncol=possibsize, byrow=TRUE) %*% pmfmatrix
+  function(event) {
+    stopifnot(length(event) == possibsize)
+    cpmfmatrix = apply(
+      .getrows(pmfmatrix, which(event)), 2,
+      function(col) { col / sum(col) })
+    # return function that multiplies the matrices
+    function(rvars) {
+      matrix(rvars, ncol=sum(event), byrow=TRUE) %*% cpmfmatrix
+    }
   }
+}
+
+# Convenience wrapper function to calculate unconditional expectations,
+getexpectationsfunc = function(possibsize, pmfs, tol=1e-10) {
+  event = rep(TRUE, possibsize)
+  getconditionalexpectationsfunc(possibsize, pmfs, tol=tol)(event)
 }
 
 # Return a function which calls getexpectations, and then applies a
