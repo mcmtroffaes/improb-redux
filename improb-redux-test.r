@@ -36,10 +36,11 @@ test.expectation.3 = function() {
   .stopifnotalmostequal(
     getexpectations(rvars),
     matrix(
-      c(5.9, 7.7,
-        4, 4,
-        2.1, 3.0,
-        3.5, 2.3),
+      c(5.9, 7.7,  # 0.4 * 3 + 0.5 * 9 + 0.1 * 2 = 5.9
+                   # 0.1 * 3 + 0.8 * 9 + 0.1 * 2 = 7.7
+        4, 4,      # constant random variable, expectation equals the constant
+        2.1, 3.0,  # etc.
+        3.5, 2.3), # etc.
       byrow=TRUE, nrow=4)
     )
 }
