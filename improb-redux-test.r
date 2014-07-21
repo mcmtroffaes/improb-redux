@@ -37,10 +37,20 @@ test.conditional.1 = function() {
       40/75, 35/75,
       0.8, 0.2,
       1, 0))
+}
+
+test.conditional.2 = function() {
+  pmfs = c(
+    0.3, 0.7, 0,
+    0.25, 0.7, 0.05,
+    0.25, 0.4, 0.35,
+    0.5, 0.4, 0.1,
+    0.5, 0.5, 0)
+  getconditionalexpectations = getconditionalexpectationsfunc(3, pmfs)
   event = c(TRUE, FALSE, FALSE)
-  rvars = c(1)
+  rvars = c(1, 2, 3)
   .stopifnotalmostequal(
-    getconditionalexpectations(event)(rvars), c(1))
+    getconditionalexpectations(event)(rvars), c(1, 2, 3))
 }
 
 # simple usage: expectation of a single random variable
@@ -227,6 +237,7 @@ test.expectation.8 = function() {
 test = function() {
   test.getrows.1()
   test.conditional.1()
+  test.conditional.2()
   test.expectation.1()
   test.expectation.2()
   test.expectation.3()
