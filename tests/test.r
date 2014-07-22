@@ -1,8 +1,4 @@
-source("improb-redux.r")
-
-################################################################################
-# tests
-################################################################################
+source("../improb-redux.r")
 
 test.getrows.helper = function(numrows, invals, rows, outvals) {
   inmat = matrix(invals, byrow=TRUE, nrow=numrows)

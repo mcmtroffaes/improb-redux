@@ -1,4 +1,4 @@
-source("improb-redux.r")
+source("../improb-redux.r")
 pmfs = c(
   0.5, 0.5,
   0.8, 0.2)
