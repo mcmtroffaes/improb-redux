@@ -22,3 +22,12 @@ isgammamaximax(rvars)
 isintervalmaximal(rvars)
 isbayesmaximal(rvars)
 isrobustbayes(rvars)
+
+pmfs2 = c(
+  0.5, 0.5,
+  0.8, 0.2,
+  0.65, 0.35)
+getexpectations2 = getexpectationsfunc(2, pmfs2) # 2 = size of possibility space
+isrobustbayes2 = isrobustbayesfunc(getexpectations2)
+getexpectations2(rvars)
+isrobustbayes2(rvars)
