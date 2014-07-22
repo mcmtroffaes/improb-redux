@@ -10,7 +10,7 @@ getlowerprevisions = getlowerprevisionsfunc(getexpectations)
 getupperprevisions = getupperprevisionsfunc(getexpectations)
 isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
 isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
-isbayesmaximal = ismaximalfunc(getexpectations, bayescompare)
+isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
 isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
 isrobustbayes = isrobustbayesfunc(getexpectations)
 rvars = c(
@@ -36,8 +36,8 @@ s1 = c(TRUE, FALSE, TRUE, FALSE)
 s2 = c(FALSE, TRUE, FALSE, TRUE)
 getexpectations.t1 = getconditionalexpectations(t1)
 getexpectations.t2 = getconditionalexpectations(t2)
-isbayesmaximal.t1 = ismaximalfunc(getexpectations.t1, bayescompare)
-isbayesmaximal.t2 = ismaximalfunc(getexpectations.t2, bayescompare)
+isbayesmaximal.t1 = ismaximalfunc(getexpectations.t1, rbayescompare)
+isbayesmaximal.t2 = ismaximalfunc(getexpectations.t2, rbayescompare)
 # dT-T1
 isbayesmaximal.t1(
   c(-1, -1,

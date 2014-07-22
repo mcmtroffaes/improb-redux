@@ -105,7 +105,7 @@ isgammamaxisomethingfunc = function(getsomethings, tol=1e-10) {
 }
 
 # Partial orders based on expectation values.
-bayescompare = function(exp1, exp2, tol=1e-10) {
+rbayescompare = function(exp1, exp2, tol=1e-10) {
   all(exp1 > exp2 + tol)
 }
 
