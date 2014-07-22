@@ -111,7 +111,7 @@ test.expectation.4 = function() {
   isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
   isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
   isgammamaxihurwicz = isgammamaxisomethingfunc(gethurwiczprevisions)
-  isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
+  isrbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
   isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
   isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
   rvars = c(
@@ -134,7 +134,7 @@ test.expectation.4 = function() {
   stopifnot(isgammamaximin(rvars) == c(TRUE, TRUE, FALSE, FALSE))
   stopifnot(isgammamaximax(rvars) == c(TRUE, FALSE, FALSE, FALSE))
   stopifnot(isgammamaxihurwicz(rvars) == c(TRUE, FALSE, FALSE, FALSE))
-  stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
+  stopifnot(isrbayesmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
   stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
   stopifnot(isrbayesadmissible(rvars) == c(TRUE, FALSE, FALSE, TRUE))
 }
@@ -151,7 +151,7 @@ test.expectation.5 = function() {
   gethurwiczprevisions = gethurwiczprevisionsfunc(getexpectations, 0.5)
   isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
   isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
-  isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
+  isrbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
   isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
   isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
   rvars = c(
@@ -163,7 +163,7 @@ test.expectation.5 = function() {
     41/10, -3/10)
   stopifnot(isgammamaximin(rvars) == c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE))
   stopifnot(isgammamaximax(rvars) == c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE))
-  stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE))
+  stopifnot(isrbayesmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE))
   stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE))
   stopifnot(isrbayesadmissible(rvars) == c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE))
 }

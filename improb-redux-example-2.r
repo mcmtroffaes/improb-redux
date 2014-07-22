@@ -10,7 +10,7 @@ getlowerprevisions = getlowerprevisionsfunc(getexpectations)
 getupperprevisions = getupperprevisionsfunc(getexpectations)
 isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
 isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
-isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
+isrbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
 isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
 isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
 rvars = c(
@@ -26,7 +26,7 @@ getupperprevisions(rvars)
 isgammamaximin(rvars)
 isgammamaximax(rvars)
 isintervalmaximal(rvars)
-isbayesmaximal(rvars)
+isrbayesmaximal(rvars)
 isrbayesadmissible(rvars)
 # backward induction
 getconditionalexpectations = getconditionalexpectationsfunc(4, pmfs)
@@ -36,26 +36,26 @@ s1 = c(TRUE, FALSE, TRUE, FALSE)
 s2 = c(FALSE, TRUE, FALSE, TRUE)
 getexpectations.t1 = getconditionalexpectations(t1)
 getexpectations.t2 = getconditionalexpectations(t2)
-isbayesmaximal.t1 = ismaximalfunc(getexpectations.t1, rbayescompare)
-isbayesmaximal.t2 = ismaximalfunc(getexpectations.t2, rbayescompare)
+isrbayesmaximal.t1 = ismaximalfunc(getexpectations.t1, rbayescompare)
+isrbayesmaximal.t2 = ismaximalfunc(getexpectations.t2, rbayescompare)
 # dT-T1
-isbayesmaximal.t1(
+isrbayesmaximal.t1(
   c(-1, -1,
     -6, 10)) 
 # dT-T2
-isbayesmaximal.t2(
+isrbayesmaximal.t2(
   c(-1, -1,  # not optimal
     -6, 10))
 # dT
-isbayesmaximal(
+isrbayesmaximal(
   c(-1, -1, -6, 10,
     -6, 10, -6, 10))
 # dTc
-isbayesmaximal(
+isrbayesmaximal(
   c(0, 0, 0, 0, # not optimal
     -5, 11, -5, 11))
 # root
-isbayesmaximal(
+isrbayesmaximal(
   c(-1, -1, -6, 10,
     -6, 10, -6, 10, # not optimal
     -5, 11, -5, 11))

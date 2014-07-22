@@ -7,7 +7,7 @@ getlowerprevisions = getlowerprevisionsfunc(getexpectations)
 getupperprevisions = getupperprevisionsfunc(getexpectations)
 isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
 isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
-isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
+isrbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
 isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
 isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
 rvars = c(
@@ -20,7 +20,7 @@ getupperprevisions(rvars)
 isgammamaximin(rvars)
 isgammamaximax(rvars)
 isintervalmaximal(rvars)
-isbayesmaximal(rvars)
+isrbayesmaximal(rvars)
 isrbayesadmissible(rvars)
 
 pmfs2 = c(
