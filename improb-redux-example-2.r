@@ -38,15 +38,23 @@ getexpectations.t1 = getconditionalexpectations(t1)
 getexpectations.t2 = getconditionalexpectations(t2)
 isbayesmaximal.t1 = ismaximalfunc(getexpectations.t1, bayescompare)
 isbayesmaximal.t2 = ismaximalfunc(getexpectations.t2, bayescompare)
+# dT-T1
 isbayesmaximal.t1(
   c(-1, -1,
     -6, 10)) 
+# dT-T2
 isbayesmaximal.t2(
   c(-1, -1,  # not optimal
     -6, 10))
+# dT
+isbayesmaximal(
+  c(-1, -1, -6, 10,
+    -6, 10, -6, 10))
+# dTc
 isbayesmaximal(
   c(0, 0, 0, 0, # not optimal
     -5, 11, -5, 11))
+# root
 isbayesmaximal(
   c(-1, -1, -6, 10,
     -6, 10, -6, 10, # not optimal
