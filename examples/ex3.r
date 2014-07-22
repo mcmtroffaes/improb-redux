@@ -9,7 +9,7 @@ isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
 isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
 isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
 isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
-isrobustbayes = isrobustbayesfunc(getexpectations)
+isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
 rvars = c(
   440, 260,
   420, 300,
@@ -21,4 +21,4 @@ isgammamaximin(rvars)
 isgammamaximax(rvars)
 isintervalmaximal(rvars)
 isbayesmaximal(rvars)
-isrobustbayes(rvars)
+isrbayesadmissible(rvars)

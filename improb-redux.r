@@ -130,7 +130,7 @@ ismaximalfunc = function(getexpectations, compare) {
 # Return a function which tells you which random variables are Bayes
 # maximal (i.e. Bayes maximal with respect to some element of the
 # credal set specified).
-isrobustbayesfunc = function(getexpectations, tol=1e-10) {
+isrbayesadmissiblefunc = function(getexpectations, tol=1e-10) {
   function(rvarvalues) {
     expectations = getexpectations(rvarvalues)
     # for each probability mass function (column), identify the random

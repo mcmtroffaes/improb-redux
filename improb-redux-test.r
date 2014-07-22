@@ -113,7 +113,7 @@ test.expectation.4 = function() {
   isgammamaxihurwicz = isgammamaxisomethingfunc(gethurwiczprevisions)
   isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
   isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
-  isrobustbayes = isrobustbayesfunc(getexpectations)
+  isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
   rvars = c(
     3, 9, 2,
     4, 4, 4,
@@ -136,7 +136,7 @@ test.expectation.4 = function() {
   stopifnot(isgammamaxihurwicz(rvars) == c(TRUE, FALSE, FALSE, FALSE))
   stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
   stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, FALSE, TRUE))
-  stopifnot(isrobustbayes(rvars) == c(TRUE, FALSE, FALSE, TRUE))
+  stopifnot(isrbayesadmissible(rvars) == c(TRUE, FALSE, FALSE, TRUE))
 }
 
 test.expectation.5 = function() {
@@ -153,7 +153,7 @@ test.expectation.5 = function() {
   isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
   isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
   isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
-  isrobustbayes = isrobustbayesfunc(getexpectations)
+  isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
   rvars = c(
     4, 0,
     0, 4,
@@ -165,7 +165,7 @@ test.expectation.5 = function() {
   stopifnot(isgammamaximax(rvars) == c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE))
   stopifnot(isbayesmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE))
   stopifnot(isintervalmaximal(rvars) == c(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE))
-  stopifnot(isrobustbayes(rvars) == c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE))
+  stopifnot(isrbayesadmissible(rvars) == c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE))
 }
 
 test.expectation.6 = function() {

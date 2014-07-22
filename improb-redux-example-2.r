@@ -12,7 +12,7 @@ isgammamaximin = isgammamaxisomethingfunc(getlowerprevisions)
 isgammamaximax = isgammamaxisomethingfunc(getupperprevisions)
 isbayesmaximal = ismaximalfunc(getexpectations, rbayescompare)
 isintervalmaximal = ismaximalfunc(getexpectations, intervalcompare)
-isrobustbayes = isrobustbayesfunc(getexpectations)
+isrbayesadmissible = isrbayesadmissiblefunc(getexpectations)
 rvars = c(
   -1, -1, -1, -1,
   -1, -1, -6, 10,
@@ -27,7 +27,7 @@ isgammamaximin(rvars)
 isgammamaximax(rvars)
 isintervalmaximal(rvars)
 isbayesmaximal(rvars)
-isrobustbayes(rvars)
+isrbayesadmissible(rvars)
 # backward induction
 getconditionalexpectations = getconditionalexpectationsfunc(4, pmfs)
 t1 = c(TRUE, TRUE, FALSE, FALSE)
