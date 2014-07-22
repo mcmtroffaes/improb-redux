@@ -50,16 +50,16 @@ rvars =
     -6, 10)
 getexpectations.t2(rvars)
 isrbayesmaximal.t2(rvars)
-# dT
-rvars =
-  c(-1, -1, -6, 10,
-    -6, 10, -6, 10)
-getexpectations(rvars)
-isrbayesmaximal(rvars)
 # dTc
 rvars =
   c(0, 0, 0, 0, # not optimal
     -5, 11, -5, 11)
+getexpectations(rvars)
+isrbayesmaximal(rvars)
+# dT
+rvars =
+  c(-1, -1, -6, 10,
+    -6, 10, -6, 10)
 getexpectations(rvars)
 isrbayesmaximal(rvars)
 # root
