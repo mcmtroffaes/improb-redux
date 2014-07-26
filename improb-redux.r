@@ -17,7 +17,7 @@
 getconditionalexpectationsfunc = function(possibsize, pmfs, tol=1e-10) {
   pmfmatrix = matrix(pmfs, nrow=possibsize)
   # all columns sum to one?
-  .stopifnotalmostequal(apply(pmfmatrix, 2, sum), 1, tol=tol)
+  .stopifnotalmostequal(colSums(pmfmatrix), 1, tol=tol)
   # all entries are non-negative?
   stopifnot(pmfmatrix + tol >= 0)
   function(event) {
