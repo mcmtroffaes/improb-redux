@@ -9,18 +9,16 @@ expectation pmf rvar = sum $ zipWith (*) pmf rvar
 expectations :: [[Double]] -> [[Double]] -> [[Double]]
 expectations = lift2 expectation
 
-conditionalpmf :: [Double] -> [Bool] -> [Double]
-conditionalpmf pmf event = map (/ norm) restrictedpmf
+conditionalpmf :: [Bool] -> [Double] -> [Double]
+conditionalpmf event pmf = map (/ norm) restrictedpmf
   where restrictedpmf = map fst $ filter snd $ zip pmf event
         norm = sum restrictedpmf
 
-conditionalexpectation :: [Double] -> [Bool] -> [Double] -> Double
-conditionalexpectation pmf event rvar =
-  expectation (conditionalpmf pmf event) rvar
+conditionalexpectation :: [Bool] -> [Double] -> [Double] -> Double
+conditionalexpectation event pmf = expectation (conditionalpmf event pmf)
 
-conditionalexpectations :: [[Double]] -> [Bool] -> [[Double]] -> [[Double]]
-conditionalexpectations pmfs event rvars =
-  (lift2 (\pmf rvar -> conditionalexpectation pmf event rvar)) pmfs rvars
+conditionalexpectations :: [Bool] -> [[Double]] -> [[Double]] -> [[Double]]
+conditionalexpectations event = lift2 (conditionalexpectation event)
 
 mapexpectations :: ([Double] -> a)
   -> ([[Double]] -> [[Double]]) -> [[Double]] -> [a]
@@ -40,12 +38,12 @@ isgammamaxisomething tol f rvars = map (\x -> (x >= mx - tol)) xs
 main = do
   putStrLn $ show $ expectation [0.1, 0.9] [2, 3]
   putStrLn $ show $ expectations [[0.1, 0.9], [0.5, 0.5]] [[2, 3], [4, 1]]
-  putStrLn $ show $ conditionalpmf [0.1, 0.7, 0.2] [True, False, True]
-  putStrLn $ show $ conditionalpmf [0.2, 0.5, 0.3] [True, False, True]
+  putStrLn $ show $ conditionalpmf [True, False, True] [0.1, 0.7, 0.2]
+  putStrLn $ show $ conditionalpmf [True, False, True] [0.2, 0.5, 0.3]
   putStrLn $ show $ conditionalexpectation
-    [0.1, 0.7, 0.2] [True, False, True] [3, 4]
+    [True, False, True] [0.1, 0.7, 0.2] [3, 4]
   putStrLn $ show $ conditionalexpectations
-    [[0.1, 0.7, 0.2], [0.2, 0.5, 0.3]] [True, False, True] [[3, 4], [2, 0]]
+    [True, False, True] [[0.1, 0.7, 0.2], [0.2, 0.5, 0.3]] [[3, 4], [2, 0]]
   putStrLn $ show $ lowerprevisions exp [[2, 3], [4, 1]]
   putStrLn $ show $ upperprevisions exp [[2, 3], [4, 1]]
   putStrLn $ show $ hurwiczprevisions 0.5 exp [[2, 3], [4, 1]]
