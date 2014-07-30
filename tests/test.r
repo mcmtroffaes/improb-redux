@@ -1,19 +1,5 @@
 source("../improb-redux.r")
 
-test.getrows.helper = function(numrows, invals, rows, outvals) {
-  inmat = matrix(invals, byrow=TRUE, nrow=numrows)
-  outmat = matrix(outvals, byrow=TRUE, ncol=ncol(inmat))
-  .stopifnotalmostequal(inmat[rows,,drop=FALSE], outmat)
-}
-
-test.getrows.1 = function() {
-  test.getrows.helper(3, c(1,2,3,4,5,6,7,8,9), c(2,3), c(4,5,6,7,8,9))
-  test.getrows.helper(3, c(1,2,3,4,5,6,7,8,9), 2, c(4,5,6))
-  test.getrows.helper(1, c(1,2,3), 1, c(1,2,3))
-  test.getrows.helper(3, c(7,8,9), c(2,3), c(8,9))
-  test.getrows.helper(3, c(7,8,9), c(2), c(8))
-}
-
 test.conditional.1 = function() {
   pmfs = c(
     0.3, 0.7, 0,
@@ -236,7 +222,6 @@ test.expectation.8 = function() {
 }
 
 test = function() {
-  test.getrows.1()
   test.conditional.1()
   test.conditional.2()
   test.expectation.1()
