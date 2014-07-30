@@ -1,36 +1,16 @@
--- Lift a function of two arguments to operate on lists. The result is
--- returned as a matrix.
-lift2 :: (a -> b -> c) -> [a] -> [b] -> [[c]]
 lift2 f xs ys = map (\y -> map (\x -> f x y) xs) ys
-
-expectation :: [Double] -> [Double] -> Double
 expectation pmf rvar = sum $ zipWith (*) pmf rvar
-
-expectations :: [[Double]] -> [[Double]] -> [[Double]]
 expectations = lift2 expectation
-
-conditionalpmf :: [Bool] -> [Double] -> [Double]
 conditionalpmf event pmf = map (/ norm) restrictedpmf
   where restrictedpmf = map fst $ filter snd $ zip pmf event
         norm = sum restrictedpmf
-
-conditionalexpectation :: [Bool] -> [Double] -> [Double] -> Double
 conditionalexpectation event pmf = expectation (conditionalpmf event pmf)
-
-conditionalexpectations :: [Bool] -> [[Double]] -> [[Double]] -> [[Double]]
 conditionalexpectations event = lift2 (conditionalexpectation event)
-
-mapexpectations :: ([Double] -> a)
-  -> ([[Double]] -> [[Double]]) -> [[Double]] -> [a]
 mapexpectations f exp rvars = map f $ exp rvars
-
 lowerprevisions = mapexpectations minimum
 upperprevisions = mapexpectations maximum
-
-hurwicz :: Double -> [Double] -> Double
 hurwicz opt xs = opt * (maximum xs) + (1 - opt) * (minimum xs)
 hurwiczprevisions opt = mapexpectations (hurwicz opt)
-
 isgammamaxisomething tol f rvars = map (\x -> (x >= mx - tol)) xs
   where xs = f rvars
         mx = maximum xs
