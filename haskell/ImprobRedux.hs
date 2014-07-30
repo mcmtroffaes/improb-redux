@@ -11,9 +11,9 @@ lowerprevisions = mapexpectations minimum
 upperprevisions = mapexpectations maximum
 hurwicz opt xs = opt * (maximum xs) + (1 - opt) * (minimum xs)
 hurwiczprevisions opt = mapexpectations (hurwicz opt)
-isgammamaxisomething tol f rvars = map (\x -> (x >= mx - tol)) xs
+isgammamaxisomething tol f rvars = map ismax xs
   where xs = f rvars
-        mx = maximum xs
+        ismax x = x >= (maximum xs) - tol
 
 main = do
   putStrLn $ show $ expectation [0.1, 0.9] [2, 3]
