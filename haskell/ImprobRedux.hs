@@ -1,3 +1,12 @@
+module ImprobRedux (
+  expectations,
+  conditionalexpectations,
+  lowerprevisions,
+  upperprevisions,
+  hurwiczprevisions,
+  isgammamaxisomething,
+  ) where
+
 lift2 f xs ys = map (\y -> map (\x -> f x y) xs) ys
 expectation pmf rvar = sum $ zipWith (*) pmf rvar
 expectations = lift2 expectation
