@@ -11,6 +11,7 @@ lift2 :: (a -> b -> c) -> [a] -> [b] -> [[c]]
 lift2 f xs ys = map (\x -> map (\y -> f x y) ys) xs
 expectation :: Num a => [a] -> [a] -> a
 expectation pmf rvar = sum $ zipWith (*) pmf rvar
+expectations :: Num a => [[a]] -> [[a]] -> [[a]]
 expectations = lift2 expectation
 conditionalpmf :: Fractional a => [Bool] -> [a] -> [a]
 conditionalpmf event pmf = map (/ norm) restrictedpmf

@@ -30,7 +30,6 @@ test1 = TestCase $ do
 
 main = do
   runTestTT $ TestList [test1]
-  {-
   putStrLn $ show $ expectations [[0.1, 0.9], [0.5, 0.5]] [[2, 3], [4, 1]]
   putStrLn $ show $ conditionalexpectations
     [True, False, True] [[0.1, 0.7, 0.2], [0.2, 0.5, 0.3]] [[3, 4], [2, 0]]
@@ -44,4 +43,3 @@ main = do
         upr = upperprevisions exps
         isgammamaximax = isgammamaxisomething 1e-10 lpr
         isgammamaximin = isgammamaxisomething 1e-10 upr
-  -}
