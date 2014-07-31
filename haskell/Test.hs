@@ -72,11 +72,19 @@ test6 = TestCase $ do
      [4, 4, 4],
      [21 % 10, 3, 18 % 10],
      [35 % 10, 23 % 10, 42 % 10]]
-    (expectations
+    (exps rvars)
+  assertEqual "lower previsions" [4, 4, 18 % 10, 23 % 10] (lprs rvars)
+  assertEqual "upper previsions" [77 % 10, 4, 3, 42 % 10] (uprs rvars)
+  assertEqual "hurwicz previsions" [585 % 100, 4, 24 % 10, 325 % 100] (hprs rvars)
+  where
+    rvars = [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]]
+    exps = expectations
       [[4 % 10, 5 % 10, 1 % 10],
        [1 % 10, 8 % 10, 1 % 10],
        [6 % 10, 2 % 10, 2 % 10]]
-      [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]])
+    lprs = lowerprevisions exps
+    uprs = upperprevisions exps
+    hprs = hurwiczprevisions 0.5 exps
 
 main = do
   runTestTT $ TestList [test1, test2, test3, test4, test5, test6]
