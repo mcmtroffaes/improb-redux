@@ -43,4 +43,4 @@ rbayesdominates tol xs ys = all cmp $ zip xs ys
 intervaldominates tol xs ys = minimum xs > maximum ys + tol
 ismaximal dominates exps rvars = map (not . isdominated) table
   where table = exps rvars
-        isdominated x = any (\y -> y `dominates` x) table
+        isdominated x = any (`dominates` x) table
