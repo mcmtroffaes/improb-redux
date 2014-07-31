@@ -1,5 +1,8 @@
 module ImprobRedux (
+  expectation,
   expectations,
+  conditionalpmf,
+  conditionalexpectation,
   conditionalexpectations,
   lowerprevisions,
   upperprevisions,
