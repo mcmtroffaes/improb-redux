@@ -33,7 +33,7 @@ conditionalexpectation event pmf = expectation (conditionalpmf event pmf)
 conditionalexpectations :: Fractional a => [Bool] -> [[a]] -> [[a]] -> [[a]]
 conditionalexpectations event = lift2 (conditionalexpectation event)
 
-mapexpectations :: ([a] -> a) -> ([[a]] -> [[a]]) -> [[a]] -> [a]
+mapexpectations :: (a -> b) -> (c -> [a]) -> c -> [b]
 mapexpectations f exps rvars = map f $ exps rvars
 
 lowerprevisions :: Ord a => ([[a]] -> [[a]]) -> [[a]] -> [a]
