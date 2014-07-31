@@ -6,7 +6,7 @@ import Test.HUnit
 
 test1 = TestCase $ do
   assertEqual
-    "conditional expectation"
+    "conditional expectation 1"
     [[1, 70 % 75, 40 % 75, 4 % 5, 1],
      [0,  5 % 75, 35 % 75, 1 % 5, 0]]
     (exps rvars)
@@ -19,18 +19,34 @@ test1 = TestCase $ do
     [2]
     (upperprevisions exps [[2, -3]])
   where
+    event = [False, True, True]
+    rvars = [[1, 0], [0, 1]]
     pmfs = [
       [ 3 % 10,   7 % 10,   0],
       [25 % 100, 70 % 100,  5 % 100],
       [25 % 100, 40 % 100, 35 % 100],
       [ 5 % 10,   4 % 10,   1 % 10],
       [ 5 % 10,   5 % 10,   0]]
-    event = [False, True, True]
-    rvars = [[1, 0], [0, 1]]
+    exps = conditionalexpectations event pmfs
+
+test2 =  TestCase $ do
+  assertEqual
+    "conditional expectation 1"
+    [[1,1,1,1,1], [2,2,2,2,2], [3,3,3,3,3]]
+    (exps rvars)
+  where
+    event = [True, False, False]
+    rvars = [[1], [2], [3]]
+    pmfs = [
+      [ 3 % 10,   7 % 10,   0],
+      [25 % 100, 70 % 100,  5 % 100],
+      [25 % 100, 40 % 100, 35 % 100],
+      [ 5 % 10,   4 % 10,   1 % 10],
+      [ 5 % 10,   5 % 10,   0]]
     exps = conditionalexpectations event pmfs
 
 main = do
-  runTestTT $ TestList [test1]
+  runTestTT $ TestList [test1, test2]
   putStrLn $ show $ expectations [[0.1, 0.9], [0.5, 0.5]] [[2, 3], [4, 1]]
   putStrLn $ show $ conditionalexpectations
     [True, False, True] [[0.1, 0.7, 0.2], [0.2, 0.5, 0.3]] [[3, 4], [2, 0]]
