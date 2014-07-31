@@ -65,8 +65,21 @@ test5 = TestCase $ do
       [[4 % 10, 5 % 10, 1 % 10], [1 % 10, 8 % 10, 1 % 10]]
       [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]])
 
+test6 = TestCase $ do
+  assertEqual
+    "expectation table"
+    [[59 % 10, 77 % 10, 4],
+     [4, 4, 4],
+     [21 % 10, 3, 18 % 10],
+     [35 % 10, 23 % 10, 42 % 10]]
+    (expectations
+      [[4 % 10, 5 % 10, 1 % 10],
+       [1 % 10, 8 % 10, 1 % 10],
+       [6 % 10, 2 % 10, 2 % 10]]
+      [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]])
+
 main = do
-  runTestTT $ TestList [test1, test2, test3, test4, test5]
+  runTestTT $ TestList [test1, test2, test3, test4, test5, test6]
   putStrLn $ show $ expectations [[0.1, 0.9], [0.5, 0.5]] [[2, 3], [4, 1]]
   putStrLn $ show $ conditionalexpectations
     [True, False, True] [[0.1, 0.7, 0.2], [0.2, 0.5, 0.3]] [[3, 4], [2, 0]]
