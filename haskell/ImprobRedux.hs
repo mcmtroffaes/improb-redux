@@ -8,7 +8,7 @@ module ImprobRedux (
   ) where
 
 lift2 :: (a -> b -> c) -> [a] -> [b] -> [[c]]
-lift2 f xs ys = map (\x -> map (\y -> f x y) ys) xs
+lift2 f xs ys = map (\y -> map (\x -> f x y) xs) ys
 expectation :: Num a => [a] -> [a] -> a
 expectation pmf rvar = sum $ zipWith (*) pmf rvar
 expectations :: Num a => [[a]] -> [[a]] -> [[a]]

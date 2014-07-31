@@ -7,7 +7,8 @@ import Test.HUnit
 test1 = TestCase $ do
   assertEqual
     "conditional expectation"
-    [[1, 0], [70 % 75, 5 % 75], [40 % 75, 35 % 75], [4 % 5, 1 % 5], [1, 0]]
+    [[1, 70 % 75, 40 % 75, 4 % 5, 1],
+     [0,  5 % 75, 35 % 75, 1 % 5, 0]]
     (exps rvars)
   assertEqual
     "lower prevision"
