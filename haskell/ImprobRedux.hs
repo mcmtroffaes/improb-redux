@@ -36,10 +36,10 @@ conditionalexpectations event = lift2 (conditionalexpectation event)
 mapexpectations :: (a -> b) -> (c -> [a]) -> c -> [b]
 mapexpectations f exps rvars = map f $ exps rvars
 
-lowerprevisions :: Ord a => ([[a]] -> [[a]]) -> [[a]] -> [a]
+lowerprevisions :: Ord a => (b -> [[a]]) -> b -> [a]
 lowerprevisions = mapexpectations minimum
 
-upperprevisions :: Ord a => ([[a]] -> [[a]]) -> [[a]] -> [a]
+upperprevisions :: Ord a => (b -> [[a]]) -> b -> [a]
 upperprevisions = mapexpectations maximum
 
 hurwicz :: (Num a, Ord a) => a -> [a] -> a
