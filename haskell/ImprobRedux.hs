@@ -45,7 +45,7 @@ upperprevisions = mapexpectations maximum
 hurwicz :: (Num a, Ord a) => a -> [a] -> a
 hurwicz opt xs = opt * (maximum xs) + (1 - opt) * (minimum xs)
 
-hurwiczprevisions :: (Num a, Ord a) => a -> ([[a]] -> [[a]]) -> [[a]] -> [a]
+hurwiczprevisions :: (Num a, Ord a) => a -> (b -> [[a]]) -> b -> [a]
 hurwiczprevisions opt = mapexpectations (hurwicz opt)
 
 isgammamaxisomething :: (Num a, Ord a) => a -> (b -> [a]) -> b -> [Bool]
