@@ -8,6 +8,9 @@ module ImprobRedux (
   upperprevisions,
   hurwiczprevisions,
   isgammamaxisomething,
+  rbayesdominates,
+  intervaldominates,
+  ismaximal,
   ) where
 
 lift2 :: (a -> b -> c) -> [a] -> [b] -> [[c]]
@@ -35,3 +38,9 @@ isgammamaxisomething :: (Num a, Ord a) => a -> ([[a]] -> [a]) -> [[a]] -> [Bool]
 isgammamaxisomething tol f rvars = map ismax xs
   where xs = f rvars
         ismax x = x >= (maximum xs) - tol
+rbayesdominates tol xs ys = all cmp $ zip xs ys
+  where cmp (x, y) = x > y + tol
+intervaldominates tol xs ys = minimum xs > maximum ys + tol
+ismaximal dominates exps rvars = map (not . isdominated) table
+  where table = exps rvars
+        isdominated x = any (\y -> y `dominates` x) table

@@ -79,6 +79,8 @@ test6 = TestCase $ do
   assertEqual "Gamma-maximin" [True, True, False, False] (isgammamaximin rvars)
   assertEqual "Gamma-maximax" [True, False, False, False] (isgammamaximax rvars)
   assertEqual "hurwicz" [True, False, False, False] (ishurwicz rvars)
+  assertEqual "rbayes maximal" [True, True, False, True] (isrbayesmaximal rvars)
+  assertEqual "interval maximal" [True, True, False, True] (isintervalmaximal rvars)
   where
     rvars = [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]]
     exps = expectations
@@ -91,6 +93,8 @@ test6 = TestCase $ do
     isgammamaximin = isgammamaxisomething 0 lprs
     isgammamaximax = isgammamaxisomething 0 uprs
     ishurwicz = isgammamaxisomething 0 hprs
+    isrbayesmaximal = ismaximal (rbayesdominates 0) exps
+    isintervalmaximal = ismaximal (intervaldominates 0) exps
 
 main = do
   runTestTT $ TestList [test1, test2, test3, test4, test5, test6]
