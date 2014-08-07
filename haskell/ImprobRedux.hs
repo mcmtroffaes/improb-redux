@@ -43,7 +43,10 @@ isgammamaxisomething tol f rvars = map ismax xs
   where xs = map f rvars
         ismax x = x >= (maximum xs) - tol
 
+isgammamaximin :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
 isgammamaximin tol pmfs = isgammamaxisomething tol (lowerprevision pmfs)
+
+isgammamaximax :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
 isgammamaximax tol pmfs = isgammamaxisomething tol (upperprevision pmfs)
 ishurwicz tol opt pmfs = isgammamaxisomething tol (hurwiczprevision opt pmfs)
 
@@ -59,5 +62,8 @@ ismaximal dominates pmfs rvars = map (not . isdominated) table
   where table = map (mapexpectations id pmfs) rvars
         isdominated x = any (`dominates` x) table
 
+isrbayesmaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
 isrbayesmaximal tol = ismaximal (pointwisedominates tol)
+
+isintervalmaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
 isintervalmaximal tol = ismaximal (intervaldominates tol)
