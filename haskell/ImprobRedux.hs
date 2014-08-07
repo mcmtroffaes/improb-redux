@@ -1,7 +1,7 @@
 module ImprobRedux (
-  expectation,
   conditionalpmf,
-  conditionalexpectation,
+  conditionalpmfs,
+  expectation,
   lowerprevision,
   upperprevision,
   hurwiczprevision,
@@ -12,16 +12,18 @@ module ImprobRedux (
   isintervalmaximal,
   ) where
 
-expectation :: Num a => [a] -> [a] -> a
-expectation pmf rvar = sum $ zipWith (*) pmf rvar
+import Data.List (nub)
 
 conditionalpmf :: Fractional a => [Bool] -> [a] -> [a]
 conditionalpmf event pmf = map (/ norm) restrictedpmf
   where restrictedpmf = map fst $ filter snd $ zip pmf event
         norm = sum restrictedpmf
 
-conditionalexpectation :: Fractional a => [Bool] -> [a] -> [a] -> a
-conditionalexpectation event pmf = expectation (conditionalpmf event pmf)
+conditionalpmfs :: (Eq a, Fractional a) => [Bool] -> [[a]] -> [[a]]
+conditionalpmfs event pmfs = nub $ map (conditionalpmf event) pmfs
+
+expectation :: Num a => [a] -> [a] -> a
+expectation pmf rvar = sum $ zipWith (*) pmf rvar
 
 mapexpectations :: Num a => ([a] -> b) -> [[a]] -> [a] -> b
 mapexpectations f pmfs rvar = f $ map (flip expectation rvar) pmfs

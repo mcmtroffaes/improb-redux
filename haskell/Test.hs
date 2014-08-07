@@ -4,16 +4,13 @@ import Data.Ratio
 import ImprobRedux
 import Test.HUnit
 
-lift2 f xs ys = map (\y -> map (\x -> f x y) xs) ys
-
 test1 = TestCase $ do
   assertEqual
     "conditional pmfs for [False, True, True]"
     [[1, 0],
      [70 % 75, 5 % 75],
      [40 % 75, 35 % 75],
-     [4 % 5, 1 % 5],
-     [1, 0]]
+     [4 % 5, 1 % 5]]
     cpmfs
   assertEqual
     "lower prevision"
@@ -31,13 +28,13 @@ test1 = TestCase $ do
       [25 % 100, 40 % 100, 35 % 100],
       [ 5 % 10,   4 % 10,   1 % 10],
       [ 5 % 10,   5 % 10,   0]]
-    cpmfs = map (conditionalpmf event) pmfs
+    cpmfs = conditionalpmfs event pmfs
 
 test2 =  TestCase $ do
   assertEqual
     "conditional pmfs for [True, False, False]"
-    (take 5 (repeat [1]))
-    (map (conditionalpmf event) pmfs)
+    [[1 % 1]]
+    (conditionalpmfs event pmfs)
   where
     event = [True, False, False]
     pmfs = [
