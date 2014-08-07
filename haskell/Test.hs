@@ -15,11 +15,11 @@ test1 = TestCase $ do
   assertEqual
     "lower prevision"
     (-1 % 3)
-    (lowerprevision cpmfs [2, -3])
+    (lowerPrevision cpmfs [2, -3])
   assertEqual
     "upper prevision"
     (2 % 1)
-    (upperprevision cpmfs [2, -3])
+    (upperPrevision cpmfs [2, -3])
   where
     event = [False, True, True]
     pmfs = [
@@ -28,13 +28,13 @@ test1 = TestCase $ do
       [25 % 100, 40 % 100, 35 % 100],
       [ 5 % 10,   4 % 10,   1 % 10],
       [ 5 % 10,   5 % 10,   0]]
-    cpmfs = conditionalpmfs event pmfs
+    cpmfs = conditionalPmfs event pmfs
 
 test2 =  TestCase $ do
   assertEqual
     "conditional pmfs for [True, False, False]"
     [[1 % 1]]
-    (conditionalpmfs event pmfs)
+    (conditionalPmfs event pmfs)
   where
     event = [True, False, False]
     pmfs = [
@@ -59,23 +59,23 @@ test4 = TestCase $ do
 test6 = TestCase $ do
   assertEqual "lower previsions"
     [4, 4, 18 % 10, 23 % 10]
-    (map (lowerprevision pmfs) rvars)
+    (map (lowerPrevision pmfs) rvars)
   assertEqual "upper previsions"
     [77 % 10, 4, 3, 42 % 10]
-    (map (upperprevision pmfs) rvars)
+    (map (upperPrevision pmfs) rvars)
   assertEqual "hurwicz previsions"
     [585 % 100, 4, 24 % 10, 325 % 100]
-    (map (hurwiczprevision (1 % 2) pmfs) rvars)
+    (map (hurwiczPrevision (1 % 2) pmfs) rvars)
   assertEqual "Gamma-maximin"
-    [True, True, False, False] (isgammamaximin 0 pmfs rvars)
+    [True, True, False, False] (isGammaMaxiMin 0 pmfs rvars)
   assertEqual "Gamma-maximax"
-    [True, False, False, False] (isgammamaximax 0 pmfs rvars)
+    [True, False, False, False] (isGammaMaxiMax 0 pmfs rvars)
   assertEqual "hurwicz"
-    [True, False, False, False] (ishurwicz 0 (1 % 2) pmfs rvars)
+    [True, False, False, False] (isHurwicz 0 (1 % 2) pmfs rvars)
   assertEqual "rbayes maximal"
-    [True, True, False, True] (isrbayesmaximal 0 pmfs rvars)
+    [True, True, False, True] (isRBayesMaximal 0 pmfs rvars)
   assertEqual "interval maximal"
-    [True, True, False, True] (isintervalmaximal 0 pmfs rvars)
+    [True, True, False, True] (isIntervalMaximal 0 pmfs rvars)
   where
     rvars = [[3, 9, 2], [4, 4, 4], [0, 3, 6], [6, 2, 1]]
     pmfs =

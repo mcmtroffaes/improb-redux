@@ -1,71 +1,74 @@
 module ImprobRedux (
-  conditionalpmf,
-  conditionalpmfs,
+  conditionalPmf,
+  conditionalPmfs,
   expectation,
-  lowerprevision,
-  upperprevision,
-  hurwiczprevision,
-  isgammamaximin,
-  isgammamaximax,
-  ishurwicz,
-  isrbayesmaximal,
-  isintervalmaximal,
+  lowerPrevision,
+  upperPrevision,
+  hurwiczPrevision,
+  isGammaMaxiMin,
+  isGammaMaxiMax,
+  isHurwicz,
+  isRBayesMaximal,
+  isIntervalMaximal,
   ) where
 
 import Data.List (nub)
 
-conditionalpmf :: Fractional a => [Bool] -> [a] -> [a]
-conditionalpmf event pmf = map (/ norm) restrictedpmf
+conditionalPmf :: Fractional a => [Bool] -> [a] -> [a]
+conditionalPmf event pmf = map (/ norm) restrictedpmf
   where restrictedpmf = map fst $ filter snd $ zip pmf event
         norm = sum restrictedpmf
 
-conditionalpmfs :: (Eq a, Fractional a) => [Bool] -> [[a]] -> [[a]]
-conditionalpmfs event pmfs = nub $ map (conditionalpmf event) pmfs
+conditionalPmfs :: (Eq a, Fractional a) => [Bool] -> [[a]] -> [[a]]
+conditionalPmfs event pmfs = nub $ map (conditionalPmf event) pmfs
 
 expectation :: Num a => [a] -> [a] -> a
 expectation pmf rvar = sum $ zipWith (*) pmf rvar
 
-mapexpectations :: Num a => ([a] -> b) -> [[a]] -> [a] -> b
-mapexpectations f pmfs rvar = f $ map (flip expectation rvar) pmfs
+transformExpectations :: Num a => ([a] -> b) -> [[a]] -> [a] -> b
+transformExpectations f pmfs rvar = f $ map (flip expectation rvar) pmfs
 
-lowerprevision :: (Num a, Ord a) => [[a]] -> [a] -> a
-lowerprevision = mapexpectations minimum
+lowerPrevision :: (Num a, Ord a) => [[a]] -> [a] -> a
+lowerPrevision = transformExpectations minimum
 
-upperprevision :: (Num a, Ord a) => [[a]] -> [a] -> a
-upperprevision = mapexpectations maximum
+upperPrevision :: (Num a, Ord a) => [[a]] -> [a] -> a
+upperPrevision = transformExpectations maximum
 
 hurwicz :: (Num a, Ord a) => a -> [a] -> a
 hurwicz opt xs = opt * (maximum xs) + (1 - opt) * (minimum xs)
 
-hurwiczprevision :: (Num a, Ord a) => a -> [[a]] -> [a] -> a
-hurwiczprevision opt = mapexpectations (hurwicz opt)
+hurwiczPrevision :: (Num a, Ord a) => a -> [[a]] -> [a] -> a
+hurwiczPrevision opt = transformExpectations (hurwicz opt)
 
-isgammamaxisomething :: (Num a, Ord a) => a -> ([a] -> a) -> [[a]] -> [Bool]
-isgammamaxisomething tol f rvars = map ismax xs
+isGammaMaxiSomething :: (Num a, Ord a) => a -> ([a] -> a) -> [[a]] -> [Bool]
+isGammaMaxiSomething tol f rvars = map ismax xs
   where xs = map f rvars
         ismax x = x >= (maximum xs) - tol
 
-isgammamaximin :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
-isgammamaximin tol pmfs = isgammamaxisomething tol (lowerprevision pmfs)
+isGammaMaxiMin :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
+isGammaMaxiMin tol pmfs = isGammaMaxiSomething tol (lowerPrevision pmfs)
 
-isgammamaximax :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
-isgammamaximax tol pmfs = isgammamaxisomething tol (upperprevision pmfs)
-ishurwicz tol opt pmfs = isgammamaxisomething tol (hurwiczprevision opt pmfs)
+isGammaMaxiMax :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
+isGammaMaxiMax tol pmfs = isGammaMaxiSomething tol (upperPrevision pmfs)
 
-pointwisedominates :: (Num a, Ord a) => a -> [a] -> [a] -> Bool
-pointwisedominates tol xs ys = all cmp $ zip xs ys
+
+isHurwicz :: (Num a, Ord a) => a -> a -> [[a]] -> [[a]] -> [Bool]
+isHurwicz tol opt pmfs = isGammaMaxiSomething tol (hurwiczPrevision opt pmfs)
+
+pointwiseDominates :: (Num a, Ord a) => a -> [a] -> [a] -> Bool
+pointwiseDominates tol xs ys = all cmp $ zip xs ys
   where cmp (x, y) = x > y + tol
 
-intervaldominates :: (Num a, Ord a) => a -> [a] -> [a] -> Bool
-intervaldominates tol xs ys = minimum xs > maximum ys + tol
+intervalDominates :: (Num a, Ord a) => a -> [a] -> [a] -> Bool
+intervalDominates tol xs ys = minimum xs > maximum ys + tol
 
-ismaximal :: Num a => ([a] -> [a] -> Bool) -> [[a]] -> [[a]] -> [Bool]
-ismaximal dominates pmfs rvars = map (not . isdominated) table
-  where table = map (mapexpectations id pmfs) rvars
+isMaximal :: Num a => ([a] -> [a] -> Bool) -> [[a]] -> [[a]] -> [Bool]
+isMaximal dominates pmfs rvars = map (not . isdominated) table
+  where table = map (transformExpectations id pmfs) rvars
         isdominated x = any (`dominates` x) table
 
-isrbayesmaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
-isrbayesmaximal tol = ismaximal (pointwisedominates tol)
+isRBayesMaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
+isRBayesMaximal tol = isMaximal (pointwiseDominates tol)
 
-isintervalmaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
-isintervalmaximal tol = ismaximal (intervaldominates tol)
+isIntervalMaximal :: (Num a, Ord a) => a -> [[a]] -> [[a]] -> [Bool]
+isIntervalMaximal tol = isMaximal (intervalDominates tol)
